@@ -9,17 +9,19 @@
     tools:showIn="@layout/activity_main">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/infoText"
+        android:layout_width="232dp"
+        android:layout_height="100dp"
         android:text="Hello World!"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.525"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.562" />
+        app:layout_constraintVertical_bias="0.195" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnSetInjection"
         android:layout_width="248dp"
         android:layout_height="92dp"
         android:onClick="displayNotificationSproyte"
@@ -32,7 +34,7 @@
         app:layout_constraintVertical_bias="0.951" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btnSetSensor"
         android:layout_width="246dp"
         android:layout_height="106dp"
         android:onClick="displayNotificationSensor"
@@ -43,5 +45,18 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.743" />
+
+    <Button
+        android:id="@+id/btnRefreshAlarm"
+        android:layout_width="246dp"
+        android:layout_height="106dp"
+        android:onClick="refreshNotifications"
+        android:text="Refresh alarm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
 
 </android.support.constraint.ConstraintLayout>
