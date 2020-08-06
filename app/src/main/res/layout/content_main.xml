@@ -52,6 +52,7 @@
         android:layout_height="106dp"
         android:onClick="refreshNotifications"
         android:text="Refresh alarm"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintLeft_toLeftOf="parent"

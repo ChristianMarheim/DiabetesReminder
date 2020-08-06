@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final boolean DEBUG = false;
 
-    int ID = 001;
+    int ID1_NORMAL = 001;
+    int ID2_DEBUG = 002;
     private final String APP_ID = "DIABETES_REMINDER_BETA_APP_ID";
     private final String SENSOR_TIMESTAMP_KEY = "SENSOR_TIMESTAMP";
     private final String SPROYTE_TIMESTAMP_KEY = "SPROYTE_TIMESTAMP";
@@ -32,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
     String CHANNEL_ID = "NOTE_NOTIFICATION_CHANNEL";
     String CHANNEL_ID_DEBUG = "DEBUG_NOTIFICATION_CHANNEL";
 
-    final long timePassedBeforeNotificationWarning = 1 * 1000 * 10; //final long threeDays = 3 * 1000 * 3600 * 24;
-    final long timePassedBeforeNotificationDeadline = 1 * 1000 * 15;    //final long fourDays = 4 * 1000 * 3600 * 24;
+    final long timePassedBeforeNotificationWarning = 1 * 1000 * 15; //final long threeDays = 3 * 1000 * 3600 * 24;
+    final long timePassedBeforeNotificationDeadline = 1 * 1000 * 20;    //final long fourDays = 4 * 1000 * 3600 * 24;
 
     long timePassedSproyte = 0;
     long timePassedSensor = 0;
@@ -66,10 +67,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         preferences = MainActivity.this.getSharedPreferences(APP_ID, Context.MODE_PRIVATE);
-        SharedPreferences preferences2 = MainActivity.this.getSharedPreferences(APP_ID, Context.MODE_PRIVATE);
-        SharedPreferences preferences3 = MainActivity.this.getSharedPreferences(APP_ID, Context.MODE_PRIVATE);
 
-        //doBusinessLogic();
+        doBusinessLogic();
     }
 
     private void doBusinessLogic() {
@@ -107,12 +106,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void refreshNotifications(View view) {
         doBusinessLogic();
+        // Since business logic saves as part of it because of a bug, we have to clear stuff here.
+        save(SENSOR_TIMESTAMP_KEY, Long.MAX_VALUE);
+        save(SPROYTE_TIMESTAMP_KEY, Long.MAX_VALUE);
     }
 
     private void updateDebugInfo(String caller) {
+        TextView infoText = findViewById(R.id.infoText);
+        infoText.setText(getInfoText());
         if(DEBUG){
-            TextView infoText = (TextView) findViewById(R.id.infoText);
-            infoText.setText(getInfoText());
             sendNote(caller + " Current state:" + getInfoText(), true);
         }
     }
@@ -154,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 sendNote("Note Sproyte i dag");
+                save(SPROYTE_TIMESTAMP_KEY, Long.MAX_VALUE);
             }
         }, timePassedBeforeNotificationDeadline - timePassedSproyte);
     }
@@ -172,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 sendNote("Note Sensor i dag");
+                save(SENSOR_TIMESTAMP_KEY, Long.MAX_VALUE);
             }
         }, timePassedBeforeNotificationDeadline - timePassedSensor);
 
@@ -204,8 +208,13 @@ public class MainActivity extends AppCompatActivity {
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText(text));
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
+
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(ID, builder.build());
+        if(debugNotificationChannel_NOT_DEBUG_MODE_MIND_YOU){
+            notificationManagerCompat.notify(ID2_DEBUG, builder.build());
+        } else {
+            notificationManagerCompat.notify(ID1_NORMAL, builder.build());
+        }
     }
 
 
@@ -217,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
@@ -233,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID_DEBUG, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
