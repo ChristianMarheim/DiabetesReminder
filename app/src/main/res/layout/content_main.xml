@@ -10,54 +10,96 @@
 
     <TextView
         android:id="@+id/infoText"
-        android:layout_width="232dp"
-        android:layout_height="100dp"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.525"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="382dp"
+        android:layout_height="65dp"
+        android:gravity="right"
+        android:text="Hello World! ææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææææ"
+        app:layout_constraintBottom_toTopOf="@+id/btnSetSensor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.195" />
+        app:layout_constraintVertical_bias="0.046" />
+
+    <TextView
+        android:id="@+id/notificationLog"
+        android:layout_width="364dp"
+        android:layout_height="63dp"
+        android:gravity="right"
+        android:text="Log"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/infoText" />
 
     <Button
         android:id="@+id/btnSetInjection"
-        android:layout_width="248dp"
-        android:layout_height="92dp"
-        android:onClick="displayNotificationSproyte"
-        android:text="Set sprøyte notification 4 days forward"
+        android:layout_width="198dp"
+        android:layout_height="91dp"
+        android:onClick="onButtonPressedNotificationSproyte"
+        android:text="Set sprøyte notification X days forward"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintHorizontal_bias="0.464"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.951" />
+        app:layout_constraintVertical_bias="0.972" />
 
     <Button
         android:id="@+id/btnSetSensor"
-        android:layout_width="246dp"
-        android:layout_height="106dp"
-        android:onClick="displayNotificationSensor"
-        android:text="Set sensor notification 4 days forward"
+        android:layout_width="198dp"
+        android:layout_height="90dp"
+        android:onClick="onButtonPressedNotificationSensor"
+        android:text="Set sensor notification X days forward"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintHorizontal_bias="0.464"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.743" />
+        app:layout_constraintVertical_bias="0.817" />
 
-    <Button
-        android:id="@+id/btnRefreshAlarm"
+    <RadioGroup
+        android:id="@+id/radioListDays"
         android:layout_width="246dp"
-        android:layout_height="106dp"
-        android:onClick="refreshNotifications"
-        android:text="Refresh alarm"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.484"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        android:layout_height="301dp"
+        android:layout_marginBottom="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnSetSensor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notificationLog"
+        app:layout_constraintVertical_bias="0.865">
+
+        <RadioButton
+            android:id="@+id/radioButton1"
+            android:layout_width="match_parent"
+            android:layout_height="59dp"
+            android:text="1 day forward"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:id="@+id/radioButton2"
+            android:layout_width="match_parent"
+            android:layout_height="160px"
+            android:text="2 days forward" />
+
+        <RadioButton
+            android:id="@+id/radioButton3"
+            android:layout_width="match_parent"
+            android:layout_height="160px"
+            android:text="3 days forward" />
+
+        <RadioButton
+            android:id="@+id/radioButton4"
+            android:layout_width="match_parent"
+            android:layout_height="160px"
+            android:checked="true"
+            android:text="4 days forward" />
+
+        <RadioButton
+            android:id="@+id/radioButton5"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="5 days forward" />
+    </RadioGroup>
 
 </android.support.constraint.ConstraintLayout>
