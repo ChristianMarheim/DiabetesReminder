@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
     final long oneDay = 1 * 1000 * 3600 * 24;
 
+//    final long timePassedBeforeNotificationWarning = 1 * 1000 * 3; //final long threeDays = 3 * 1000 * 3600 * 24;
+//    final long timePassedBeforeNotificationDeadline = 1 * 1000 * 7;    //final long fourDays = 4 * 1000 * 3600 * 24;
+
     final long timePassedBeforeNotificationWarning = 1 * 1000 * 3; //final long threeDays = 3 * 1000 * 3600 * 24;
     final long timePassedBeforeNotificationDeadline = 1 * 1000 * 7;    //final long fourDays = 4 * 1000 * 3600 * 24;
 
@@ -255,7 +258,8 @@ public class MainActivity extends AppCompatActivity {
 
     private long getTimeFactor() {
         if(DEBUG_TIME)
-            return 1000 * 3;
+            //return 1000 * 3;
+            return 1000 * 3600;
         return oneDay;
     }
 
