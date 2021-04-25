@@ -172,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
         editor.putLong(key, value);
         editor.commit();
 
+        if(Long.MAX_VALUE == value){
+            throw new RuntimeException("SHIT IS FACKED");
+        }
+
 
         long timestampSensor = preferences.getLong(SENSOR_TIMESTAMP_KEY, 0);
         long timestampSproyte = preferences.getLong(SPROYTE_TIMESTAMP_KEY, 0);
@@ -179,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
             setInfoText("DEBUG:\n" +
                     "Current time: " + format(new Date()) + "\n" +
                     "Alarm for neste sensor: " + format(new Date(timestampSensor + getDelay(false, false))) + "\n" +
-                    "Alarm for neste sprøyte: " + format(new Date(timestampSproyte + getDelay(false, false))) + "\n");
+                     "Alarm for neste sprøyte: " + format(new Date(timestampSproyte + getDelay(false, false))) + "\n");
         } catch (Exception e){
             int a = 0;
             int b = a;
@@ -258,8 +262,8 @@ public class MainActivity extends AppCompatActivity {
 
     private long getTimeFactor() {
         if(DEBUG_TIME)
-            //return 1000 * 3;
-            return 1000 * 3600;
+            return 1000 * 3;
+//            return 1000 * 3600;
         return oneDay;
     }
 
