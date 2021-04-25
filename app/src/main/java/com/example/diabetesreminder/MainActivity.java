@@ -19,40 +19,34 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.content.SharedPreferences.*;
+import static com.example.diabetesreminder.Constants.*;
+import static com.example.diabetesreminder.Formatter.format;
+import static com.example.diabetesreminder.Storage.*;
+import static com.example.diabetesreminder.Storage.getTimePassedSensor;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final boolean DEBUG = false;
-    private static final boolean DEBUG_TIME = true;
+    protected SharedPreferences preferences;
 
-    int ID1_NORMAL = 001;
-    int ID2_DEBUG = 002;
-    private final String APP_ID = "DIABETES_REMINDER_BETA_APP_ID";
-    private final String SENSOR_TIMESTAMP_KEY = "SENSOR_TIMESTAMP";
-    private final String SPROYTE_TIMESTAMP_KEY = "SPROYTE_TIMESTAMP";
+    protected int numberOfDaysSelected = 3;
+    protected boolean init = false;
 
-    int numberOfDaysSelected = 3;
+    protected boolean DEBUG = true;
+    protected boolean DEBUG_TIME = true;
 
-    String CHANNEL_ID = "NOTE_NOTIFICATION_CHANNEL";
-    String CHANNEL_ID_DEBUG = "DEBUG_NOTIFICATION_CHANNEL";
 
-    final long oneDay = 1 * 1000 * 3600 * 24;
 
-//    final long timePassedBeforeNotificationWarning = 1 * 1000 * 3; //final long threeDays = 3 * 1000 * 3600 * 24;
+
+
+
+
+
+    //    final long timePassedBeforeNotificationWarning = 1 * 1000 * 3; //final long threeDays = 3 * 1000 * 3600 * 24;
 //    final long timePassedBeforeNotificationDeadline = 1 * 1000 * 7;    //final long fourDays = 4 * 1000 * 3600 * 24;
 
     final long timePassedBeforeNotificationWarning = 1 * 1000 * 3; //final long threeDays = 3 * 1000 * 3600 * 24;
     final long timePassedBeforeNotificationDeadline = 1 * 1000 * 7;    //final long fourDays = 4 * 1000 * 3600 * 24;
 
-    long timePassedSproyte = 0;
-    long timePassedSensor = 0;
-    long longTimestampSensor;
-    long longTimestampSproyte;
-
-    SharedPreferences preferences;
-
-    boolean init = false;
 
     /*
     TODO/Commit message - 18.07.2020:
@@ -71,41 +65,11 @@ public class MainActivity extends AppCompatActivity {
     it fast to try out and just revert.
      */
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        preferences = MainActivity.this.getSharedPreferences(APP_ID, Context.MODE_PRIVATE);
-
-        RadioGroup radioGroup = findViewById(R.id.radioListDays);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // find which radio button is selected
-                if(checkedId == R.id.radioButton1) {
-                    numberOfDaysSelected = 1;
-                } else  if(checkedId == R.id.radioButton2) {
-                    numberOfDaysSelected = 2;
-                } else  if(checkedId == R.id.radioButton3) {
-                    numberOfDaysSelected = 3;
-                } else  if(checkedId == R.id.radioButton4) {
-                    numberOfDaysSelected = 4;
-                } else if(checkedId == R.id.radioButton5) {
-                    numberOfDaysSelected = 5;
-                }
-            }
-        });
-
-
-        doBusinessLogic();
-    }
-
     private void doBusinessLogic() {
         updateDebugInfo("Before");
 
-        if(preferences.getLong(SENSOR_TIMESTAMP_KEY, 0) != 0){
-            timePassedSensor = getTimePassedSensor();
+        if(getTimePassedSensor() != 0){
+            long timePassedSensor = getTimePassedSensor();
 
             if(timePassedSensor > timePassedBeforeNotificationWarning){
                 save(SENSOR_TIMESTAMP_KEY, new Date().getTime()); // FIXME Why the fuck save now? Put in a check if we have data instead?
@@ -113,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if(preferences.getLong(SPROYTE_TIMESTAMP_KEY, 0) != 0){
-            timePassedSproyte = getSproyteTimePassed();
+        if(getTimePassedSproyte() != 0){
+            long timePassedSproyte = getTimePassedSproyte();
 
             if(timePassedSproyte > timePassedBeforeNotificationWarning){
                 save(SPROYTE_TIMESTAMP_KEY, new Date().getTime());  // FIXME Why the fuck save now?
@@ -122,16 +86,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         updateDebugInfo("After");
-    }
-
-    private long getTimePassedSensor() {
-        longTimestampSensor = preferences.getLong(SENSOR_TIMESTAMP_KEY, 0);
-        return new Date().getTime() - longTimestampSensor;
-    }
-
-    private long getSproyteTimePassed() {
-        longTimestampSproyte = preferences.getLong(SENSOR_TIMESTAMP_KEY, 0);
-        return new Date().getTime() - longTimestampSproyte;
     }
 
     public void refreshNotifications(View view) {
@@ -142,9 +96,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDebugInfo(String caller) {
-        setInfoText(getInfoText());
+        setInfoText(Storage.getDebugData());
         if(DEBUG){
-            sendNote(caller + " Current state:" + getInfoText(), true);
+            sendNote(caller + " Current state:" + getDebugData(), true);
         }
     }
 
@@ -153,53 +107,24 @@ public class MainActivity extends AppCompatActivity {
         infoText.setText(text);
     }
 
-    private String getInfoText() {
-        if(!DEBUG)
-            return "";
-        return "\n\nDEBUG:\nSENSOR_TIMESTAMP_KEY=" + preferences.getLong(SENSOR_TIMESTAMP_KEY, 0) + "\n" +
-               "SPROYTE_TIMESTAMP_KEY=" + preferences.getLong(SPROYTE_TIMESTAMP_KEY, 0) + "\n" +
-               "new Date()" + new SimpleDateFormat().format(new Date().getTime()) + "\n" +
-               "timePassedSproyte=" + timePassedSproyte + "\n" +
-               "timePassedSensor=" + timePassedSensor + "\n" +
-                "longTimestampSensor=" + longTimestampSensor + "\n" +
-                "longTimestampSproyte=" + longTimestampSproyte + "\n" +
-                "timePassedBeforeNotificationWarning=" + timePassedBeforeNotificationWarning + "\n" +
-                "timePassedBeforeNotificationDeadline=" + timePassedBeforeNotificationDeadline + "\n";
-    }
-
     private void save(String key, long value) {
-        Editor editor = preferences.edit();
-        editor.putLong(key, value);
-        editor.commit();
+        saveInternal(key, value);
 
-        if(Long.MAX_VALUE == value){
-            throw new RuntimeException("SHIT IS FACKED");
-        }
-
-
-        long timestampSensor = preferences.getLong(SENSOR_TIMESTAMP_KEY, 0);
-        long timestampSproyte = preferences.getLong(SPROYTE_TIMESTAMP_KEY, 0);
+        long timestampSensor = getSensorTimestamp();
+        long timestampSproyte = getSproyteTimestamp();
         try {
             setInfoText("DEBUG:\n" +
                     "Current time: " + format(new Date()) + "\n" +
                     "Alarm for neste sensor: " + format(new Date(timestampSensor + getDelay(false, false))) + "\n" +
-                     "Alarm for neste sprøyte: " + format(new Date(timestampSproyte + getDelay(false, false))) + "\n");
+                    "Alarm for neste sprøyte: " + format(new Date(timestampSproyte + getDelay(false, false))) + "\n");
         } catch (Exception e){
             int a = 0;
             int b = a;
         }
 
         if(DEBUG){
-            sendNote("Saved the following preferences: " + getInfoText(), true);
+            sendNote("Saved the following preferences: " + getDebugData(), true);
         }
-    }
-
-    private String format(Date date){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy MMMM EEE d HH:mm:ss");
-        if(date.getTime() == Long.MAX_VALUE){
-            return "              ";
-        }
-        return format.format(date);
     }
 
     public void onButtonPressedNotificationSensor(View view) {
@@ -219,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 save(SENSOR_TIMESTAMP_KEY, Long.MAX_VALUE);
             }
         }, getDelay(false, false));
-
     }
 
     public void onButtonPressedNotificationSproyte(View view) {
@@ -246,9 +170,9 @@ public class MainActivity extends AppCompatActivity {
 
         long timePassed = 0;
         if(isSproyte){
-            timePassed = timePassedSproyte;
+            timePassed = getTimePassedSproyte();
         } else {
-            timePassed = timePassedSensor;
+            timePassed = getTimePassedSensor();
         }
         long result = 0;
         if(isWarning){
@@ -273,14 +197,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendNote(String text, boolean debugNotificationChannel_NOT_DEBUG_MODE_MIND_YOU) {
-        if (!init)
-            createNotificationChannel();
-
         //if(text.contains("Sproyte"))
-            //timePassedSproyte = 0; //FIXME Må fikse dagen-foer-warning vs bytte-idag-warning
+        //timePassedSproyte = 0; //FIXME Må fikse dagen-foer-warning vs bytte-idag-warning
 
         //if(text.contains("Sensor"))
-            //timePassedSensor = 0;  //FIXME Må fikse dagen-foer-warning vs bytte-idag-warning
+        //timePassedSensor = 0;  //FIXME Må fikse dagen-foer-warning vs bytte-idag-warning
 
         NotificationCompat.Builder builder;
         if(debugNotificationChannel_NOT_DEBUG_MODE_MIND_YOU){
@@ -289,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
             builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         }
         builder.setSmallIcon(R.drawable.icon_notification);
-        text = text + "\n" + getInfoText();
+        text = text + "\n" + getDebugData();
         builder.setContentTitle(text);
         builder.setContentText(text);
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText(text));
@@ -306,6 +227,53 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
+
+
+
+    /*
+
+          ____    _       _   _   __  __   ____    ___   _   _    ____
+         |  _ \  | |     | | | | |  \/  | | __ )  |_ _| | \ | |  / ___|
+         | |_) | | |     | | | | | |\/| | |  _ \   | |  |  \| | | |  _
+         |  __/  | |___  | |_| | | |  | | | |_) |  | |  | |\  | | |_| |
+         |_|     |_____|  \___/  |_|  |_| |____/  |___| |_| \_|  \____|
+
+     */
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        preferences = MainActivity.this.getSharedPreferences(APP_ID, Context.MODE_PRIVATE);
+        Storage.initialize(preferences, DEBUG);
+
+        RadioGroup radioGroup = findViewById(R.id.radioListDays);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // find which radio button is selected
+                if(checkedId == R.id.radioButton1) {
+                    numberOfDaysSelected = 1;
+                } else  if(checkedId == R.id.radioButton2) {
+                    numberOfDaysSelected = 2;
+                } else  if(checkedId == R.id.radioButton3) {
+                    numberOfDaysSelected = 3;
+                } else  if(checkedId == R.id.radioButton4) {
+                    numberOfDaysSelected = 4;
+                } else if(checkedId == R.id.radioButton5) {
+                    numberOfDaysSelected = 5;
+                }
+            }
+        });
+
+        if (!init)
+            createNotificationChannel();
+
+        doBusinessLogic();
+    }
 
     private void createNotificationChannel() {
         init = true;
